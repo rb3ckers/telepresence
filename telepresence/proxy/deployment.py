@@ -63,6 +63,7 @@ def existing_deployment(
     expose: PortMapping,
     deployment_env: Dict,
     service_account: str,
+    deployment_type: str,
 ) -> Tuple[str, Optional[str]]:
     """
     Handle an existing deployment by doing nothing
@@ -292,6 +293,7 @@ def supplant_deployment(
     expose: PortMapping,
     deployment_env: Dict,
     service_account: str,
+    deployment_type: str,
 ) -> Tuple[str, str]:
     """
     Swap out an existing Deployment, supplant method.
@@ -310,7 +312,7 @@ def supplant_deployment(
     )
 
     deployment, container = _split_deployment_container(deployment_arg)
-    deployment_json = get_deployment(runner, deployment)
+    deployment_json = get_deployment(runner, deployment, deployment_type)
     container = _get_container_name(container, deployment_json)
 
     new_deployment_json = new_swapped_deployment(

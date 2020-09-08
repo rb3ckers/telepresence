@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from .proxy import setup
+from functools import partial
 from .remote import RemoteInfo
 
 __all__ = "RemoteInfo", "setup",

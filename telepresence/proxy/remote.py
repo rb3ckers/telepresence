@@ -59,7 +59,7 @@ class RemoteInfo(object):
         return version
 
 
-def get_deployment(runner: Runner, name: str) -> Dict[str, Any]:
+def get_deployment(runner: Runner, name: str, deployment_type: str) -> Dict[str, Any]:
     """
     Retrieve the Deployment/DeploymentConfig manifest named, or emit an error
     message for the user.
@@ -89,7 +89,7 @@ def get_deployment(runner: Runner, name: str) -> Dict[str, Any]:
     if manifest == "":
         try:
             manifest = runner.get_output(
-                runner.kubectl("get", "deploy", name, "-o", "json"),
+                runner.kubectl("get", deployment_type, name, "-o", "json"),
                 reveal=True,
             )
         except CalledProcessError as exc:
@@ -146,6 +146,7 @@ def get_remote_info(
     runner: Runner,
     deployment_name: str,
     unused_deployment_type: str,
+    deployment_type:str,
     run_id: Optional[str] = None,
 ) -> RemoteInfo:
     """
@@ -157,7 +158,7 @@ def get_remote_info(
     """
     span = runner.span()
 
-    deployment = get_deployment(runner, deployment_name)
+    deployment = get_deployment(runner, deployment_name, deployment_type)
     dst_metadata = deployment["spec"]["template"]["metadata"]
     expected_labels = dst_metadata.get("labels", {})
 

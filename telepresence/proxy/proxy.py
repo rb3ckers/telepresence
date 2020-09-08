@@ -17,6 +17,7 @@ import os
 import re
 from subprocess import CalledProcessError
 from typing import Callable, Dict
+from functools import partial
 
 from telepresence.runner import Runner
 from telepresence.utilities import get_alternate_nameserver
@@ -143,6 +144,7 @@ def setup(runner: Runner,
         args.expose,
         deployment_env,
         args.service_account or "",
+        args.deployment_type,
     )
 
     # Figure out which operation the user wants
@@ -206,8 +208,10 @@ def legacy_setup(runner: Runner,
             operation = swap_deployment_openshift
             deployment_type = "deploymentconfig"
         else:
-            operation = supplant_deployment
-            deployment_type = "deployment"
+            operation = partial(
+                supplant_deployment, deployment_type=args.deployment_type
+            )
+            deployment_type = args.deployment_type
 
     # minikube/minishift break DNS because DNS gets captured, sent to minikube,
     # which sends it back to the DNS server set by host, resulting in a DNS
@@ -252,6 +256,7 @@ def legacy_setup(runner: Runner,
             tel_deployment,
             deployment_type,
             run_id=run_id,
+            deployment_type=deployment_type
         )
         return remote_info
 
